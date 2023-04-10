@@ -30,6 +30,25 @@ def loss(X, Y, w, b):
     return np.average((predict(X, w, b) - Y) ** 2) 
 
 
+def gradient(X, Y, w, b):
+    w_gradient = 2 * np.average(X * (predict(X, w, b) - Y))
+    b_gradient = 2 * np.average(predict(X, w, b) - Y)
+    return (w_gradient, b_gradient)
+
+
+def train_with_gradient(X, Y, iterations, lr):
+    # This version of train with gradient is much faster than the previous one
+    w = 0
+    b = 0
+    for i in range(iterations):
+        if (i % 5000 == 0):
+            print("Iteration %4d => Loss: %.10f" % (i, loss(X, Y, w, b)))
+        w_gradient, b_gradient = gradient(X, Y, w, b)
+        w -= w_gradient * lr
+        b -= b_gradient * lr
+    return w, b
+
+
 def train(X, Y, iterations, lr): # lr -> learning rate
     w = 0                        # weight
     b = 0                        # bias
@@ -57,5 +76,14 @@ def main():
     print("Prediction: x=%d => y=%.2f" % (20, predict(20, w, b)))
     plot(X, Y, w, b)
 
+
+def main1():
+    # Using gradient vs using the errors and tuning in w and lr.
+    X, Y = np.loadtxt("pizza.txt", skiprows=1, unpack=True)
+    w, b = train_with_gradient(X, Y, iterations=20000, lr=0.0001)
+    print("\nw=%.10f" % w)
+    plot(X, Y, w, b)
+
 if __name__ == '__main__':
-    main()
+    # main()
+    main1()
